@@ -1,0 +1,371 @@
+﻿.lds-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Takes full viewport height */
+}
+
+.lds-ripple,
+.lds-ripple div {
+    box-sizing: border-box;
+}
+
+.lds-ripple {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+    .lds-ripple div {
+        position: absolute;
+        border: 4px solid currentColor;
+        opacity: 1;
+        border-radius: 50%;
+        animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+
+        .lds-ripple div:nth-child(2) {
+            animation-delay: -0.5s;
+        }
+
+@keyframes lds-ripple {
+    0% {
+        top: 36px;
+        left: 36px;
+        width: 8px;
+        height: 8px;
+        opacity: 0;
+    }
+
+    4.9% {
+        top: 36px;
+        left: 36px;
+        width: 8px;
+        height: 8px;
+        opacity: 0;
+    }
+
+    5% {
+        top: 36px;
+        left: 36px;
+        width: 8px;
+        height: 8px;
+        opacity: 1;
+    }
+
+    100% {
+        top: 0;
+        left: 0;
+        width: 80px;
+        height: 80px;
+        opacity: 0;
+    }
+}
+
+
+
+.extra-bold-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+}
+
+/* Header */
+.text-center {
+    text-align: center;
+}
+
+
+/* Container */
+.container {
+    margin: 0 auto;
+    width: 100%;
+}
+
+.dashboard {
+    display: grid;
+    grid-template-areas:
+        "topBar topBar"
+        "grafiek recentAlert"
+        "agenda recentAlert";
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    height: 100vh;
+    margin: 0 auto;
+}
+
+.topBar {
+    grid-area: topBar;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f4f4f4;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.grafiek {
+    grid-area: grafiek;
+}
+
+.recentAlert {
+    grid-area: recentAlert;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+    .recentAlert > * {
+        flex: 1;
+        aspect-ratio: 16 / 9;
+        width: 80%;
+        background: #ccc;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+
+/* -------------- Begin Agenda style -----------------*/
+.agenda {
+    grid-area: agenda;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 5px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    height: 500px;
+    width: 100%;
+}
+/* Toevoegen knop rechtsboven binnen de agenda */
+.agenda-header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.agenda-title {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
+
+
+.btn-toggle {
+    position: absolute;
+    right: 0;
+    background-color: #0078D4;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+
+    .btn-toggle:hover {
+        background-color: #005a9e;
+    }
+
+/* ------------ Begin FORM */
+/* Popup overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Popup content */
+.popup-content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 450px;
+    position: relative;
+}
+
+/* Input fields aligned */
+.input-group {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.input-field label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-field input,
+.input-field select,
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+/* Form buttons */
+.form-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+}
+
+.btn-save {
+    background-color: #0078D4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.btn-cancel {
+    background-color: #ccc;
+    color: black;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* ------------  EINDE FORM */
+
+
+
+/* Stijling voor de aparte taken sectie */
+.taken-sectie {
+    background-color: #C5C5C5;
+    width: 100%;
+    height: 90%;
+    overflow-y: auto;
+    border-radius: 10px;
+    padding: 10px;
+    margin-top: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+    .taken-sectie::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .taken-sectie::-webkit-scrollbar-thumb {
+        background-color: #ccc;
+        border-radius: 8px;
+    }
+
+    .taken-sectie::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+        border-radius: 8px;
+    }
+
+.geen-taken {
+    color: #fff;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+/* Taak item styling */
+.taak-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #8D8D8D;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+
+.taak-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.taak-titel {
+    font-weight: bold;
+    font-size: 14px;
+    color: #fff;
+    width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.taak-divider {
+    width: 2px;
+    height: 20px;
+    background-color: #ddd;
+    margin: 0 5px;
+}
+
+.taak-tijd {
+    font-size: 14px;
+    color: #fff;
+    width: 100px;
+    text-align: right;
+}
+
+
+/* Scrollbare taakoverzicht */
+.agenda-overzicht {
+    width: 100%;
+    max-height: 400px;
+    padding-right: 5px;
+    margin-top: 5px;
+}
+
+
+    .agenda-overzicht ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+
+
+
+/* -------------- Einde Agenda style -----------------*/
+
+.templateBorder {
+    background: #EEEEEE;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

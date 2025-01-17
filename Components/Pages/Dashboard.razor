@@ -1,0 +1,246 @@
+﻿@page "/"
+
+@using System.Linq;
+@using System;
+@using ZorgRobotWebApp.Services.AgendaManager;
+@using ZorgRobotWebApp.Services.Datainterface;
+@rendermode InteractiveServer
+@inject IJSRuntime JS
+@inject NavigationManager uriHelper
+@inject TaskUtil _taskUtil
+@inject SqlTaskRepo _sqlTaskRepo
+
+
+<PageTitle>Dashboard</PageTitle>
+
+@if (_dataInitialized == false)
+{
+    <!-- Loading screen -->
+    <div class="lds-container">
+        <div class="lds-ripple">
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="dashboard">
+        <!-- Top bar sectie -->
+        <div class="templateBorder topBar">
+            <button class="btn-settings">Instellingen</button>
+        </div>
+
+        <!-- Border Grafiek display -->
+        <div class="templateBorder grafiek">
+            <div class="grafiek-header">
+                <label>Geaccepteerde Taken</label>
+                <select>
+                    <option>Vandaag</option>
+                    <option>Deze Week</option>
+                    <option>Deze Maand</option>
+                </select>
+            </div>
+            <canvas id="takenGrafiek"></canvas>
+        </div>
+
+        <!-- Border Recent activiteiten en Alert notificatie -->
+        <div class="templateBorder recentAlert">
+            <div class="templateBorder recent-activiteiten">
+                <label>Recente Activiteiten</label>
+                <ul>
+                    <li>Taak "Medicatie innemen" voltooid</li>
+                    <li>Reminder ingesteld voor ontbijt</li>
+                    <li>Notificatie ontvangen om te wandelen</li>
+                </ul>
+            </div>
+            <div class="templateBorder alert-notificaties">
+                <label>Alert Notificaties</label>
+                <ul>
+                    <li><span class="alert">! </span> Medicatie overgeslagen</li>
+                    <li><span class="alert">! </span> Geen activiteit geregistreerd vandaag</li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- Border van agenda -->
+        <div class="templateBorder agenda">
+            <div class="agenda-header">
+                <h2 class="agenda-title">TAKEN OVERZICHT</h2>
+                <button @onclick="ToggleForm" class="btn-toggle">+ Taak toevoegen</button>
+            </div>
+            @if (_isFormVisible)
+            {
+                <div class="popup-overlay">
+                    <div class="popup-content">
+                        <form id="taakForm" @onsubmit="AddTask">
+                            <div class="input-group">
+                                <div class="input-field">
+                                    <label for="titel">Titel</label>
+                                    <input type="text" id="titel" @bind="_taskTitle" placeholder="Titel van taak" required />
+                                </div>
+                                <div class="input-field">
+                                    <label for="datum">Datum</label>
+                                    <input type="date" id="datum" @bind="_taskDate" required />
+                                </div>
+                                <div class="input-field">
+                                    <label for="starttijd">Starttijd</label>
+                                    <input type="time" id="starttijd" @bind-value="_taskStartTime" @bind-value:event="oninput" required />
+                                </div>
+                                <div class="input-field">
+                                    <label for="eindtijd">Eindtijd</label>
+                                    <input type="time" id="eindtijd" @bind-value="_taskEndTime" @bind-value:event="oninput" required />
+                                </div>
+                                <div class="input-field">
+                                    <label for="herhaling">Herhaling</label>
+                                    <select id="herhaling" @bind="_taskInterval" required>
+                                        <option value="niet-herhalen">Niet herhalen</option>
+                                        <option value="dagelijks">Dagelijks</option>
+                                        <option value="wekelijks">Wekelijks</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="submit" class="btn-save">Opslaan</button>
+                                <button type="button" class="btn-cancel" @onclick="ToggleForm">Annuleren</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+            <div class="taken-sectie">
+                @if (_taskList.Count == 0)
+                {
+                    <p class="geen-taken">Er zijn nog geen taken ingepland voor vandaag.</p>
+                }
+                else
+                {
+                    <div class="agenda-overzicht">
+                        <ul>
+                            @foreach (var task in _taskList)
+                            {
+                                <li>
+                                    <div class="taak-item">
+                                        <div class="taak-content">
+                                            <div class="taak-titel">@task.Title</div>
+                                            <div class="taak-divider"></div>
+                                            <div class="taak-tijd">@task.StartTime.ToString("HH:mm") - @task.EndTime.ToString("HH:mm")</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+
+}
+
+@code {
+    private bool _moduleLoaded;
+    private bool _dataInitialized;
+    private IJSObjectReference _WebUtil;
+    private bool _isFormVisible = false;
+
+    private string _taskTitle;
+    private DateTime _taskDate;
+    private DateTime _taskStartTime;
+    private DateTime _taskEndTime;
+    private string _taskInterval;
+
+    private List<AgendaTask> _taskList;
+
+
+
+
+    private void AddTask()
+    {
+        var task = new AgendaTask
+            {
+                Title = _taskTitle,
+                Date = _taskDate,
+                StartTime = _taskStartTime,
+                EndTime = _taskEndTime,
+                Interval = _taskInterval,
+            };
+
+        _taskList = _taskUtil.AddTaskToList(_taskList, task);
+        ResetForm();
+        ToggleForm();
+    }
+
+    private void ResetForm()
+    {
+        // Reset form
+        _taskTitle = string.Empty;
+        _taskInterval = "niet-herhalen";
+        _taskStartTime = DateTime.Now;
+        _taskEndTime = DateTime.Now;
+        _taskDate = DateTime.Today;
+    }
+
+    private void ToggleForm()
+    {
+        _isFormVisible = !_isFormVisible;
+    }
+
+    private async Task OnDataInputChanged()
+    {
+        if (_moduleLoaded && _dataInitialized)
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task InitData()
+    {
+        ResetForm();
+
+        try
+        {
+            _taskList = _sqlTaskRepo.GetAllTasks();
+        }catch(Exception e)
+        {
+            throw;  // Preserves the original exception
+            // _taskList = new();
+        }
+        
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await InitData();
+                _dataInitialized = true;
+                _moduleLoaded = true;
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred during rendering: {ex.Message}");
+            }
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeModuleAsync(_WebUtil);
+    }
+
+    private async Task<IJSObjectReference?> DisposeModuleAsync(IJSObjectReference? module)
+    {
+        if (module is not null)
+        {
+            await module.DisposeAsync();
+            _moduleLoaded = false;
+        }
+        return null;
+    }
+}

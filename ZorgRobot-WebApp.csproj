@@ -1,11 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>ZorgRobot-WebApp</RootNamespace>
+    <RootNamespace>ZorgRobotWebApp</RootNamespace>
     <AssemblyName>$(AssemblyName.Replace(' ', '_'))</AssemblyName>
+    <UserSecretsId>f711cdbb-0239-494e-8ab9-8f0ff2c241aa</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HiveMQtt" Version="0.24.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.0" />
+  </ItemGroup>
 
 </Project>

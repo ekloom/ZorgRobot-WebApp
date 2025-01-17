@@ -2,9 +2,10 @@
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.ReasonCodes;
 using HiveMQtt.MQTT5.Types;
+using System.Reflection;
 using System.Text;
 
-namespace SimpleMqtt;
+namespace ZorgRobotWebApp.Services.Mqtt;
 
 /// <summary>
 /// Deze klasse 'wrapt' de HiveMQClient die alle code bevat om
@@ -28,7 +29,7 @@ public class SimpleMqttClient : IDisposable
     /// </summary>
     public SimpleMqttClient(SimpleMqttClientConfiguration options)
     {
-        this.ClientId = options.ClientId;
+        ClientId = options.ClientId;
 
         _client = new HiveMQClient(new()
         {
@@ -66,7 +67,7 @@ public class SimpleMqttClient : IDisposable
     /// <param name="message">Het bericht dat verstuurd moet worden</param>
     public async Task PublishMessage(SimpleMqttMessage message, bool retain = false)
     {
-        await this.OpenAndVerifyConnection();
+        await OpenAndVerifyConnection();
 
         var mqttMessage = new MQTT5PublishMessage
         {
@@ -97,7 +98,7 @@ public class SimpleMqttClient : IDisposable
     /// </summary>
     public async Task SubscribeToTopic(string topic)
     {
-        await this.OpenAndVerifyConnection();
+        await OpenAndVerifyConnection();
         await _client.SubscribeAsync(topic, QualityOfService.ExactlyOnceDelivery).ConfigureAwait(false);
     }
 
@@ -113,7 +114,7 @@ public class SimpleMqttClient : IDisposable
             Message = DefaultEncoding.GetString(e.PublishMessage.Payload!)
         };
 
-        this.OnMessageReceived?.Invoke(this, msg);
+        OnMessageReceived?.Invoke(this, msg);
     }
 
     /// <summary>
@@ -123,7 +124,7 @@ public class SimpleMqttClient : IDisposable
     private async Task OpenAndVerifyConnection()
     {
         // Open de verbinding wanneer deze niet open is
-        if (!this._client.IsConnected())
+        if (!_client.IsConnected())
         {
             var connectionResult = await _client.ConnectAsync().ConfigureAwait(false);
 
@@ -151,20 +152,23 @@ public class SimpleMqttClient : IDisposable
     /// <returns></returns>
     public static SimpleMqttClient CreateSimpleMqttClientForHiveMQ(string clientId)
     {
+
         var mqttWrapper = new SimpleMqttClient(new()
         {
-            Host = "e953906fa9f8466c9716379ceebd7411.s1.eu.hivemq.cloud", // maak eventueel een account aan bij hivemq als dit problemen geeft.
+            Host = "99cba3f1321a43acbf17b4553dd71dca.s1.eu.hivemq.cloud", // maak eventueel een account aan bij hivemq als dit problemen geeft.
             Port = 8883,
             CleanStart = false, // <--- false, haalt al gebufferde meldingen ook op.
             ClientId = clientId, // Dit clientid moet uniek zijn binnen de broker
             TimeoutInMs = 5_000, // Standaard time-out bij het maken van een verbinding (5 seconden)
-            UserName = "BlazorWithDataCommunication",
-            Password = "Loo,.;235p)f"
+            UserName = "ZRPA_98a3Xb",
+            Password = "4&7ZQvPY7ykEN422TcHx"
         });
 
         return mqttWrapper;
     }
+
 }
+
 
 /// <summary>
 /// Deze klasse bevat de instructies waarmee je MQTT client wordt geconfigureerd
